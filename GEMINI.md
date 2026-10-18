@@ -94,6 +94,11 @@ Este documento define os padrões técnicos, restrições arquiteturais e conven
    - Não gerar comentários redundantes ou código morto.
 2. **Padrões Back-end (Spring Boot):**
    - Utilizar `record` para DTOs com Bean Validation (`@NotBlank`, `@Email`, `@NotEmpty`, `@Valid`, `@Positive`).
+2. **Padrões Back-end (Spring Boot, Java 21 & Lombok `1.18.36`):**
+   - **Dependência Lombok:** Declarar explicitamente na versão `1.18.36` com `<scope>provided</scope>` (compatibilidade total com Java 21 e *Flexible Constructor Bodies* no Language Server).
+   - **DTOs de Entrada e Saída (Requests e Responses):** Utilizar preferencialmente **Java Records nativos** (imutabilidade, construtor canônico e acessores limpos, sem `@Getter`, `@AllArgsConstructor` ou `@Data`), aplicando Bean Validation (`@NotBlank`, `@Email`, `@NotEmpty`, `@Valid`, `@Positive`, `@Size`) diretamente nos componentes do `record`.
+   - **Controllers e Services:** Utilizar `@RequiredArgsConstructor` para assegurar injeção de dependências por construtor sobre campos `private final`.
+   - **Entidades JPA/Hibernate:** **Proibido o uso de `@Data`**. Manter uso granular e defensivo de `@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor` e `@Builder`, evitando loops de recursão em `toString()` ou quebras de `equals`/`hashCode` em coleções de entidades persistidas.
    - Manter regras de negócio e cálculos (totais de pedidos, transições de status) encapsulados nas classes `*Service` e entidades de domínio.
 3. **Padrões Front-end (React + Redux Toolkit):**
    - Utilizar `createSlice` com reducers diretos para estado local/sessão e `createAsyncThunk` apenas quando estritamente necessário.
