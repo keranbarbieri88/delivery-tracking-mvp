@@ -1,8 +1,11 @@
 package com.delivery.api.auth;
 
+import com.delivery.api.auth.dto.AuthResponse;
+import com.delivery.api.auth.dto.LoginRequest;
 import com.delivery.api.auth.dto.RegisterRequest;
 import com.delivery.api.auth.dto.UserResponse;
 import com.delivery.api.shared.exception.EmailAlreadyExistsException;
+import com.delivery.api.shared.security.JwtService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +13,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -18,6 +25,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +38,12 @@ class AuthServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private AuthenticationManager authenticationManager;
+
+    @Mock
+    private JwtService jwtService;
 
     @InjectMocks
     private AuthService authService;
@@ -84,6 +98,52 @@ class AuthServiceTest {
 
         verify(userRepository, never()).save(any());
         verify(passwordEncoder, never()).encode(any());
+    }
+
+    @Test
+    @DisplayName("Deve autenticar credenciais válidas e retornar AuthResponse com token JWT")
+    void shouldLoginWithValidCredentials() {
+        // Arrange
+        LoginRequest request = new LoginRequest("  Maria@Email.com ", "senhaSegura123");
+        UserEntity user = UserEntity.builder()
+                .id(UUID.randomUUID())
+                .nome("Maria Silva")
+                .email("maria@email.com")
+                .senha("$2a$10$hashedPasswordValue")
+                .createdAt(LocalDateTime.now())
+                .build();
+        UserSecurityDetails userDetails = new UserSecurityDetails(user);
+        Authentication authentication = mock(Authentication.class);
+
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(jwtService.generateToken(user)).thenReturn("jwt.token.assinado");
+
+        // Act
+        AuthResponse response = authService.login(request);
+
+        // Assert
+        assertThat(response.token()).isEqualTo("jwt.token.assinado");
+        assertThat(response.type()).isEqualTo("Bearer");
+        assertThat(response.user().id()).isEqualTo(user.getId());
+        assertThat(response.user().email()).isEqualTo("maria@email.com");
+        assertThat(response.user().nome()).isEqualTo("Maria Silva");
+    }
+
+    @Test
+    @DisplayName("Deve propagar BadCredentialsException quando credenciais de login forem inválidas")
+    void shouldRejectInvalidLoginCredentials() {
+        // Arrange
+        LoginRequest request = new LoginRequest("maria@email.com", "senhaIncorreta");
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new BadCredentialsException("Bad credentials"));
+
+        // Act & Assert
+        assertThatThrownBy(() -> authService.login(request))
+                .isInstanceOf(BadCredentialsException.class);
+
+        verify(jwtService, never()).generateToken(any());
     }
 }
 

@@ -1,5 +1,7 @@
 package com.delivery.api.auth;
 
+import com.delivery.api.auth.dto.AuthResponse;
+import com.delivery.api.auth.dto.LoginRequest;
 import com.delivery.api.auth.dto.RegisterRequest;
 import com.delivery.api.auth.dto.UserResponse;
 import jakarta.validation.Valid;
@@ -22,6 +24,12 @@ public class AuthController {
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
         UserResponse created = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 }
 
