@@ -32,10 +32,13 @@ public class JwtService {
     public String generateToken(UserEntity user) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationMs);
+        String roleName = user.getRole() != null ? user.getRole().name() : "CLIENTE";
 
         return Jwts.builder()
                 .subject(user.getEmail())
                 .claim("userId", user.getId() != null ? user.getId().toString() : null)
+                .claim("role", roleName)
+                .claim("nome", user.getNome())
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(signingKey, Jwts.SIG.HS256)

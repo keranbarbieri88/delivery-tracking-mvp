@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  input:user-invalid,
+  input.user-invalid-fallback {
+    border-color: #dc2626;
+    background-color: #fef2f2;
+  }
+
+  input:user-valid,
+  input.user-valid-fallback {
+    border-color: #16a34a;
+  }
+
+  .field:has(input:user-invalid) .hint,
+  .field:has(input.user-invalid-fallback) .hint {
+    color: #dc2626;
+    font-weight: 500;
+  }
+}
+
