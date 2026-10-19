@@ -88,5 +88,28 @@ class JwtServiceTest {
         assertThat(foreignValid).isFalse();
         assertThat(tamperedValid).isFalse();
     }
+
+    @Test
+    @DisplayName("Deve rejeitar token quando o UserDetails pertencer a outro e-mail ou token for malformado")
+    void shouldRejectTokenWhenUsernameDoesNotMatchOrTokenIsMalformed() {
+        // Arrange
+        JwtService jwtService = new JwtService("chave-secreta-utf8-com-mais-de-32-caracteres-seguros!", 60_000L);
+        UserEntity tokenOwner = UserEntity.builder()
+                .email("dono@delivery.com")
+                .senha("$2a$10$hash")
+                .build();
+        UserEntity anotherUser = UserEntity.builder()
+                .email("intruso@delivery.com")
+                .senha("$2a$10$hash")
+                .build();
+
+        String token = jwtService.generateToken(tokenOwner);
+
+        // Act & Assert
+        assertThat(jwtService.isTokenValid(token)).isTrue();
+        assertThat(jwtService.extractUserId(token)).isNull();
+        assertThat(jwtService.isTokenValid(token, new UserSecurityDetails(anotherUser))).isFalse();
+        assertThat(jwtService.isTokenValid("token.invalido.malformado")).isFalse();
+    }
 }
 

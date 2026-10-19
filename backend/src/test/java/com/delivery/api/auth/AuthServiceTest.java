@@ -77,11 +77,45 @@ class AuthServiceTest {
         assertThat(persisted.getEmail()).isEqualTo("maria@email.com");
         assertThat(persisted.getSenha()).isEqualTo("$2a$10$hashedPasswordValue");
         assertThat(persisted.getSenha()).isNotEqualTo("senhaSegura123");
+        assertThat(persisted.getRole()).isEqualTo(Role.CLIENTE);
 
         assertThat(response.id()).isEqualTo(generatedId);
         assertThat(response.nome()).isEqualTo("Maria Silva");
         assertThat(response.email()).isEqualTo("maria@email.com");
         assertThat(response.createdAt()).isEqualTo(now);
+    }
+
+    @Test
+    @DisplayName("Deve registrar usuário com perfil específico (LOJISTA) e garantir defaults em prePersist")
+    void shouldRegisterUserWithExplicitRoleAndPrePersistDefaults() {
+        // Arrange
+        RegisterRequest request = new RegisterRequest("Loja Central", "loja@delivery.com", "senhaSegura123", Role.LOJISTA);
+        when(userRepository.existsByEmailIgnoreCase("loja@delivery.com")).thenReturn(false);
+        when(passwordEncoder.encode("senhaSegura123")).thenReturn("$2a$10$hashedLoja");
+        when(userRepository.save(any(UserEntity.class))).thenAnswer(invocation -> {
+            UserEntity entity = invocation.getArgument(0);
+            entity.setId(UUID.randomUUID());
+            entity.prePersist();
+            return entity;
+        });
+
+        // Act
+        UserResponse response = authService.register(request);
+
+        // Assert
+        ArgumentCaptor<UserEntity> userCaptor = ArgumentCaptor.forClass(UserEntity.class);
+        verify(userRepository).save(userCaptor.capture());
+
+        UserEntity persisted = userCaptor.getValue();
+        assertThat(persisted.getRole()).isEqualTo(Role.LOJISTA);
+        assertThat(persisted.getCreatedAt()).isNotNull();
+        assertThat(response.email()).isEqualTo("loja@delivery.com");
+
+        // Valida fallback de role nula no prePersist de UserEntity
+        UserEntity rawUser = new UserEntity();
+        rawUser.prePersist();
+        assertThat(rawUser.getRole()).isEqualTo(Role.CLIENTE);
+        assertThat(rawUser.getCreatedAt()).isNotNull();
     }
 
     @Test
