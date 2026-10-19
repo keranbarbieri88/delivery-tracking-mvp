@@ -1,20 +1,26 @@
 package com.delivery.api.shared.exception;
 
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.time.Instant;
 import java.util.Map;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record ErrorResponse(
-        LocalDateTime timestamp,
+        Instant timestamp,
         int status,
+        String error,
         String message,
-        Map<String, String> errors
+        String path,
+        Map<String, String> validationErrors
 ) {
-    public static ErrorResponse of(int status, String message) {
-        return new ErrorResponse(LocalDateTime.now(), status, message, Map.of());
+    public static ErrorResponse of(int status, String error, String message, String path) {
+        return new ErrorResponse(Instant.now(), status, error, message, path, null);
     }
 
-    public static ErrorResponse of(int status, String message, Map<String, String> errors) {
-        return new ErrorResponse(LocalDateTime.now(), status, message, errors);
+    public static ErrorResponse withValidationErrors(int status, String error, String message, String path, Map<String, String> errors) {
+        return new ErrorResponse(Instant.now(), status, error, message, path, errors);
     }
 }
+
 

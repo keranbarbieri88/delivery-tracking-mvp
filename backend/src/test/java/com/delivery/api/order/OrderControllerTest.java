@@ -166,7 +166,9 @@ class OrderControllerTest {
                         .content(objectMapper.writeValueAsString(invalidItemsRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.errors").isNotEmpty());
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.path").value("/api/v1/pedidos"))
+                .andExpect(jsonPath("$.validationErrors").isNotEmpty());
     }
 
     @Test
