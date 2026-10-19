@@ -1,6 +1,7 @@
 package com.delivery.api.order;
 
 import com.delivery.api.auth.UserEntity;
+import com.delivery.api.shared.exception.InvalidStatusTransitionException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -58,6 +60,10 @@ public class Order {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
     @Builder.Default
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> itens = new ArrayList<>();
@@ -70,9 +76,15 @@ public class Order {
         if (this.createdAt == null) {
             this.createdAt = Instant.now();
         }
+        if (this.updatedAt == null) {
+            this.updatedAt = this.createdAt;
+        }
     }
 
     public void addItem(OrderItem item) {
+        if (item == null) {
+            throw new IllegalArgumentException("O item do pedido não pode ser nulo");
+        }
         if (this.itens == null) {
             this.itens = new ArrayList<>();
         }
@@ -84,6 +96,16 @@ public class Order {
         if (this.itens != null && this.itens.remove(item)) {
             item.setOrder(null);
         }
+    }
+
+    public void updateStatus(OrderStatus newStatus) {
+        if (newStatus == null) {
+            throw new IllegalArgumentException("O novo status do pedido é obrigatório");
+        }
+        if (!this.status.canTransitionTo(newStatus)) {
+            throw new InvalidStatusTransitionException(this.status, newStatus);
+        }
+        this.status = newStatus;
     }
 
     public BigDecimal calcularValorTotal() {
@@ -107,4 +129,3 @@ public class Order {
         return getClass().hashCode();
     }
 }
-
