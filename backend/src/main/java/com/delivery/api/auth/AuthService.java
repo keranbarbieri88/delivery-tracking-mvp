@@ -35,6 +35,7 @@ public class AuthService {
                 .nome(request.nome().trim())
                 .email(normalizedEmail)
                 .senha(passwordEncoder.encode(request.senha()))
+                .role(request.role() != null ? request.role() : Role.CLIENTE)
                 .build();
 
         UserEntity savedUser = userRepository.save(user);

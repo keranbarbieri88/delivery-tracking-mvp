@@ -2,6 +2,8 @@ package com.delivery.api.auth;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,11 +40,19 @@ public class UserEntity {
     @Column(nullable = false)
     private String senha;
 
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private Role role = Role.CLIENTE;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     void prePersist() {
+        if (this.role == null) {
+            this.role = Role.CLIENTE;
+        }
         if (this.createdAt == null) {
             this.createdAt = LocalDateTime.now();
         }

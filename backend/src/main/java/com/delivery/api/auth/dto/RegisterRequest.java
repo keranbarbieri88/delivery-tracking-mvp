@@ -1,7 +1,10 @@
 package com.delivery.api.auth.dto;
 
+import com.delivery.api.auth.Role;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record RegisterRequest(
@@ -16,7 +19,23 @@ public record RegisterRequest(
 
         @NotBlank(message = "A senha é obrigatória")
         @Size(min = 6, max = 100, message = "A senha deve ter entre 6 e 100 caracteres")
-        String senha
+        String senha,
+        
+        @NotNull(message = "O perfil (role) é obrigatório")
+        Role role
 ) {
+        
+    // Construtor compacto para definir CLIENTE por padrão se for nulo
+    public RegisterRequest {
+        if (role == null) {
+            role = Role.CLIENTE;
+        }
+    }
+
+    // Sobrecarga com 3 parâmetros para manter compatibilidade com os testes antigos
+    public RegisterRequest(String nome, String email, String senha) {
+        this(nome, email, senha, Role.CLIENTE);
+    }
+        
 }
 

@@ -90,8 +90,8 @@ public class JwtService {
             if (keyBytes.length >= 32) {
                 return Keys.hmacShaKeyFor(keyBytes);
             }
-        } catch (IllegalArgumentException ignored) {
-            // Fallback para bytes UTF-8 caso não seja Base64 estrito
+        } catch (RuntimeException ignored) {
+            // Fallback para bytes UTF-8 caso não seja Base64 estrito (ex.: DecodingException)
         }
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
