@@ -25,13 +25,8 @@ const STATUS_CONFIG: Record<OrderStatus, StatusStyleConfig> = {
     classes: 'bg-amber-100 text-amber-800 ring-1 ring-inset ring-amber-600/20',
     icon: <ChefHat className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />,
   },
-  DESPACHADO: {
-    label: 'Despachado',
-    classes: 'bg-purple-100 text-purple-800 ring-1 ring-inset ring-purple-600/20',
-    icon: <Truck className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />,
-  },
-  ENVIADO: {
-    label: 'Despachado',
+  SAIU_PARA_ENTREGA: {
+    label: 'Saiu Para Entrega',
     classes: 'bg-purple-100 text-purple-800 ring-1 ring-inset ring-purple-600/20',
     icon: <Truck className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />,
   },
@@ -69,4 +64,3 @@ export const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({
     </span>
   );
 };
-

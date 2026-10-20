@@ -5,7 +5,7 @@
 @layer base {
   input:user-invalid,
   input.user-invalid-fallback {
-    border-color: #dc2626;
+    border-color: #ff5e5e;
     background-color: #fef2f2;
   }
 
@@ -16,7 +16,7 @@
 
   .field:has(input:user-invalid) .hint,
   .field:has(input.user-invalid-fallback) .hint {
-    color: #dc2626;
+    color: #ff5e5e;
     font-weight: 500;
   }
 
@@ -31,4 +31,3 @@
     backdrop-filter: blur(2px);
   }
 }
-

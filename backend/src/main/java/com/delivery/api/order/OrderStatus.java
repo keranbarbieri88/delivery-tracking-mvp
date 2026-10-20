@@ -13,13 +13,13 @@ public enum OrderStatus {
     EM_PREPARO {
         @Override
         public Set<OrderStatus> nextValidStatuses() {
-            return EnumSet.of(ENVIADO, CANCELADO);
+            return EnumSet.of(SAIU_PARA_ENTREGA, CANCELADO);
         }
     },
-    ENVIADO {
+    SAIU_PARA_ENTREGA {
         @Override
         public Set<OrderStatus> nextValidStatuses() {
-            return EnumSet.of(ENTREGUE);
+            return EnumSet.of(ENTREGUE, CANCELADO);
         }
     },
     ENTREGUE {
@@ -41,4 +41,3 @@ public enum OrderStatus {
         return next != null && nextValidStatuses().contains(next);
     }
 }
-

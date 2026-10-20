@@ -26,7 +26,7 @@ const FILTER_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: 'TODOS', label: 'Todos' },
   { value: 'RECEBIDO', label: 'Recebidos' },
   { value: 'EM_PREPARO', label: 'Em Preparo' },
-  { value: 'DESPACHADO', label: 'Despachados' },
+  { value: 'SAIU_PARA_ENTREGA', label: 'Saiu Para Entrega' },
   { value: 'ENTREGUE', label: 'Entregues' },
   { value: 'CANCELADO', label: 'Cancelados' },
 ];
@@ -34,9 +34,6 @@ const FILTER_OPTIONS: { value: StatusFilter; label: string }[] = [
 function matchesFilter(orderStatus: OrderStatus, filter: StatusFilter): boolean {
   if (filter === 'TODOS') {
     return true;
-  }
-  if (filter === 'DESPACHADO') {
-    return orderStatus === 'DESPACHADO' || orderStatus === 'ENVIADO';
   }
   return orderStatus === filter;
 }
@@ -79,10 +76,10 @@ export const OrdersPage: React.FC = () => {
     async (orderId: string, newStatus: OrderStatus) => {
       const updatedOrder = await updateOrderStatus(orderId, newStatus);
       setOrders((prevOrders) =>
-        prevOrders.map((order) => (order.id === orderId ? updatedOrder : order))
+        prevOrders.map((order) => (order.id === orderId ? updatedOrder : order)),
       );
     },
-    []
+    [],
   );
 
   const handleOrderCreated = useCallback(
@@ -93,34 +90,31 @@ export const OrdersPage: React.FC = () => {
         ...prevOrders.filter((o) => o.id !== createdOrder.id),
       ]);
       const shortId = createdOrder.id ? createdOrder.id.slice(0, 8).toUpperCase() : '';
-      setSuccessMessage(
-        `Pedido ${shortId ? `#${shortId} ` : ''}registrado com sucesso!`
-      );
+      setSuccessMessage(`Pedido ${shortId ? `#${shortId} ` : ''}registrado com sucesso!`);
       await fetchOrders(true);
     },
-    [fetchOrders]
+    [fetchOrders],
   );
 
   const filteredOrders = useMemo(
     () => orders.filter((order) => matchesFilter(order.status, statusFilter)),
-    [orders, statusFilter]
+    [orders, statusFilter],
   );
 
   const counters = useMemo(() => {
     let recebidos = 0;
     let emPreparo = 0;
-    let despachados = 0;
+    let saiuParaEntrega = 0;
     let entregues = 0;
 
     for (const order of orders) {
       if (order.status === 'RECEBIDO') recebidos += 1;
       else if (order.status === 'EM_PREPARO') emPreparo += 1;
-      else if (order.status === 'DESPACHADO' || order.status === 'ENVIADO')
-        despachados += 1;
+      else if (order.status === 'SAIU_PARA_ENTREGA') saiuParaEntrega += 1;
       else if (order.status === 'ENTREGUE') entregues += 1;
     }
 
-    return { recebidos, emPreparo, despachados, entregues };
+    return { recebidos, emPreparo, saiuParaEntrega, entregues };
   }, [orders]);
 
   const userRole = user?.role ?? 'CLIENTE';
@@ -141,7 +135,7 @@ export const OrdersPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex flex-wrap shrink-0 items-center gap-2.5">
+          <div className="flex shrink-0 flex-wrap items-center gap-2.5">
             <Button
               variant="secondary"
               onClick={() => void fetchOrders(true)}
@@ -203,8 +197,12 @@ export const OrdersPage: React.FC = () => {
               <Truck className="h-5 w-5" aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-xs font-medium text-slate-500">Despachados</p>
-              <p className="text-lg font-bold text-slate-900">{counters.despachados}</p>
+              <p className="truncate text-xs font-medium text-slate-500">
+                Saiu Para Entrega
+              </p>
+              <p className="text-lg font-bold text-slate-900">
+                {counters.saiuParaEntrega}
+              </p>
             </div>
           </div>
 
@@ -259,9 +257,7 @@ export const OrdersPage: React.FC = () => {
                 <h2 className="text-sm font-bold">
                   Não foi possível carregar os pedidos
                 </h2>
-                <p className="mt-0.5 text-xs text-red-700 sm:text-sm">
-                  {errorMessage}
-                </p>
+                <p className="mt-0.5 text-xs text-red-700 sm:text-sm">{errorMessage}</p>
               </div>
             </div>
 
@@ -337,10 +333,7 @@ export const OrdersPage: React.FC = () => {
             </p>
             <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
               {statusFilter !== 'TODOS' && (
-                <Button
-                  variant="secondary"
-                  onClick={() => setStatusFilter('TODOS')}
-                >
+                <Button variant="secondary" onClick={() => setStatusFilter('TODOS')}>
                   Mostrar todos os status
                 </Button>
               )}

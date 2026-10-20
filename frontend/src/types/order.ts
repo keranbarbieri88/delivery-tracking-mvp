@@ -1,8 +1,7 @@
 export type OrderStatus =
   | 'RECEBIDO'
   | 'EM_PREPARO'
-  | 'DESPACHADO'
-  | 'ENVIADO'
+  | 'SAIU_PARA_ENTREGA'
   | 'ENTREGUE'
   | 'CANCELADO';
 
@@ -51,4 +50,3 @@ export interface RawOrderResponse {
   createdAt?: string;
   itens?: OrderItem[];
 }
-

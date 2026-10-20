@@ -172,7 +172,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @DisplayName("PATCH /api/v1/pedidos/{id}/status deve respeitar permissões por Role e máquina de estados (RECEBIDO -> EM_PREPARO -> ENVIADO -> ENTREGUE)")
+    @DisplayName("PATCH /api/v1/pedidos/{id}/status deve respeitar permissões por Role e máquina de estados (RECEBIDO -> EM_PREPARO -> SAIU_PARA_ENTREGA -> ENTREGUE)")
     void shouldEnforceRolePermissionsAndStateMachineTransitions() throws Exception {
         // Arrange
         CreateOrderRequest createRequest = new CreateOrderRequest(
@@ -221,15 +221,15 @@ class OrderControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.status").value(403));
 
-        // Act & Assert — Lojista avança EM_PREPARO -> ENVIADO (200 OK)
+        // Act & Assert — Lojista avança EM_PREPARO -> SAIU_PARA_ENTREGA (200 OK)
         mockMvc.perform(patch("/api/v1/pedidos/{id}/status", orderId)
                         .header(HttpHeaders.AUTHORIZATION, lojistaBearerToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new UpdateOrderStatusRequest(OrderStatus.ENVIADO))))
+                        .content(objectMapper.writeValueAsString(new UpdateOrderStatusRequest(OrderStatus.SAIU_PARA_ENTREGA))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("ENVIADO"));
+                .andExpect(jsonPath("$.status").value("SAIU_PARA_ENTREGA"));
 
-        // Act & Assert — Lojista avança ENVIADO -> ENTREGUE (200 OK)
+        // Act & Assert — Lojista avança SAIU_PARA_ENTREGA -> ENTREGUE (200 OK)
         mockMvc.perform(patch("/api/v1/pedidos/{id}/status", orderId)
                         .header(HttpHeaders.AUTHORIZATION, lojistaBearerToken)
                         .contentType(MediaType.APPLICATION_JSON)
