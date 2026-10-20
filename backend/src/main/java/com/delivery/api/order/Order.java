@@ -52,7 +52,6 @@ public class Order {
     private String enderecoEntrega;
 
     @Builder.Default
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private OrderStatus status = OrderStatus.RECEBIDO;
 
@@ -119,8 +118,10 @@ public class Order {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Order other)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Order other))
+            return false;
         return id != null && Objects.equals(id, other.id);
     }
 

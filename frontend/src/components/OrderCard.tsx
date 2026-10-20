@@ -40,33 +40,27 @@ interface StatusOption {
 const ALL_STATUS_OPTIONS: StatusOption[] = [
   { value: 'RECEBIDO', label: 'Recebido' },
   { value: 'EM_PREPARO', label: 'Em Preparo' },
-  { value: 'DESPACHADO', label: 'Despachado' },
+  { value: 'SAIU_PARA_ENTREGA', label: 'Saiu Para Entrega' },
   { value: 'ENTREGUE', label: 'Entregue' },
   { value: 'CANCELADO', label: 'Cancelado' },
 ];
 
-function normalizeDisplayStatus(status: OrderStatus): OrderStatus {
-  return status === 'ENVIADO' ? 'DESPACHADO' : status;
-}
-
 function getAllowedNextStatuses(current: OrderStatus, role: Role): OrderStatus[] {
-  const normalized = normalizeDisplayStatus(current);
-
-  if (normalized === 'ENTREGUE' || normalized === 'CANCELADO') {
+  if (current === 'ENTREGUE' || current === 'CANCELADO') {
     return [];
   }
 
   if (role === 'CLIENTE') {
-    return normalized === 'RECEBIDO' ? ['CANCELADO'] : [];
+    return current === 'RECEBIDO' ? ['CANCELADO'] : [];
   }
 
-  switch (normalized) {
+  switch (current) {
     case 'RECEBIDO':
       return ['EM_PREPARO', 'CANCELADO'];
     case 'EM_PREPARO':
-      return ['DESPACHADO', 'CANCELADO'];
-    case 'DESPACHADO':
-      return ['ENTREGUE'];
+      return ['SAIU_PARA_ENTREGA', 'CANCELADO'];
+    case 'SAIU_PARA_ENTREGA':
+      return ['ENTREGUE', 'CANCELADO'];
     default:
       return [];
   }
@@ -92,7 +86,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
   const [updating, setUpdating] = useState(false);
   const [cardError, setCardError] = useState<string | null>(null);
 
-  const currentDisplayStatus = normalizeDisplayStatus(order.status);
+  const currentDisplayStatus = order.status;
   const isTerminal =
     currentDisplayStatus === 'ENTREGUE' || currentDisplayStatus === 'CANCELADO';
   const allowedNext = getAllowedNextStatuses(order.status, userRole);
@@ -101,12 +95,10 @@ export const OrderCard: React.FC<OrderCardProps> = ({
   const shortId = order.id ? order.id.slice(0, 8).toUpperCase() : '---';
   const totalItemsCount = order.itens.reduce(
     (acc, item) => acc + (Number(item.quantidade) || 0),
-    0
+    0,
   );
 
-  const handleSelectChange = async (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
     const nextStatus = event.target.value as OrderStatus;
     if (!nextStatus || nextStatus === currentDisplayStatus) {
       return;
@@ -185,8 +177,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
           <ul className="max-h-36 space-y-1.5 overflow-y-auto pr-1 text-xs sm:text-sm">
             {order.itens.map((item, index) => {
-              const subtotal =
-                item.subtotal ?? item.quantidade * item.precoUnitario;
+              const subtotal = item.subtotal ?? item.quantidade * item.precoUnitario;
               return (
                 <li
                   key={item.id ?? `${order.id}-item-${index}`}
@@ -237,10 +228,10 @@ export const OrderCard: React.FC<OrderCardProps> = ({
             {isTerminal
               ? 'Pedido finalizado (status definitivo)'
               : userRole === 'CLIENTE'
-              ? allowedNext.includes('CANCELADO')
-                ? 'Ação disponível (cancelamento permitido enquanto Recebido)'
-                : 'Pedido em andamento pela loja'
-              : 'Atualizar etapa do pedido'}
+                ? allowedNext.includes('CANCELADO')
+                  ? 'Ação disponível (cancelamento permitido enquanto Recebido)'
+                  : 'Pedido em andamento pela loja'
+                : 'Atualizar etapa do pedido'}
           </label>
 
           <div className="relative">
@@ -282,4 +273,3 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     </article>
   );
 };
-

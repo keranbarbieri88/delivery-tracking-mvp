@@ -407,7 +407,7 @@ class OrderServiceTest {
                 "lojista@delivery.com"
         )).isInstanceOf(InvalidStatusTransitionException.class);
 
-        // Act & Assert — Transições válidas passo a passo: RECEBIDO -> EM_PREPARO -> ENVIADO -> ENTREGUE
+        // Act & Assert — Transições válidas passo a passo: RECEBIDO -> EM_PREPARO -> SAIU_PARA_ENTREGA -> ENTREGUE
         assertThat(orderService.updateOrderStatus(
                 orderId,
                 new UpdateOrderStatusRequest(OrderStatus.EM_PREPARO),
@@ -416,9 +416,9 @@ class OrderServiceTest {
 
         assertThat(orderService.updateOrderStatus(
                 orderId,
-                new UpdateOrderStatusRequest(OrderStatus.ENVIADO),
+                new UpdateOrderStatusRequest(OrderStatus.SAIU_PARA_ENTREGA),
                 "lojista@delivery.com"
-        ).status()).isEqualTo(OrderStatus.ENVIADO);
+        ).status()).isEqualTo(OrderStatus.SAIU_PARA_ENTREGA);
 
         assertThat(orderService.updateOrderStatus(
                 orderId,

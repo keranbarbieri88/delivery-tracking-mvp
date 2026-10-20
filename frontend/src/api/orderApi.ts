@@ -52,13 +52,6 @@ export function normalizeOrder(raw: RawOrderResponse): Order {
   };
 }
 
-function toBackendStatus(status: OrderStatus): OrderStatus {
-  if (status === 'DESPACHADO') {
-    return 'ENVIADO';
-  }
-  return status;
-}
-
 export async function listOrders(): Promise<Order[]> {
   const response = await apiClient.get<RawOrderResponse[]>('/pedidos');
   return Array.isArray(response.data) ? response.data.map(normalizeOrder) : [];
@@ -82,13 +75,10 @@ export async function updateOrderStatus(
   id: string,
   status: OrderStatus
 ): Promise<Order> {
-  const payload: UpdateOrderStatusRequest = {
-    status: toBackendStatus(status),
-  };
+  const payload: UpdateOrderStatusRequest = { status };
   const response = await apiClient.patch<RawOrderResponse>(
     `/pedidos/${id}/status`,
     payload
   );
   return normalizeOrder(response.data);
 }
-

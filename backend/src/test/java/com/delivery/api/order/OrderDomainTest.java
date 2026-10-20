@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class OrderDomainTest {
 
     @Test
-    @DisplayName("Deve permitir o fluxo completo válido: RECEBIDO -> EM_PREPARO -> ENVIADO -> ENTREGUE")
+    @DisplayName("Deve permitir o fluxo completo válido: RECEBIDO -> EM_PREPARO -> SAIU_PARA_ENTREGA -> ENTREGUE")
     void shouldAllowFullValidDeliveryLifecycle() {
         // Arrange
         Order order = Order.builder()
@@ -28,12 +28,12 @@ class OrderDomainTest {
         order.updateStatus(OrderStatus.EM_PREPARO);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.EM_PREPARO);
         assertThat(OrderStatus.EM_PREPARO.nextValidStatuses())
-                .containsExactlyInAnyOrder(OrderStatus.ENVIADO, OrderStatus.CANCELADO);
+                .containsExactlyInAnyOrder(OrderStatus.SAIU_PARA_ENTREGA, OrderStatus.CANCELADO);
 
-        order.updateStatus(OrderStatus.ENVIADO);
-        assertThat(order.getStatus()).isEqualTo(OrderStatus.ENVIADO);
-        assertThat(OrderStatus.ENVIADO.nextValidStatuses())
-                .containsExactly(OrderStatus.ENTREGUE);
+        order.updateStatus(OrderStatus.SAIU_PARA_ENTREGA);
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.SAIU_PARA_ENTREGA);
+        assertThat(OrderStatus.SAIU_PARA_ENTREGA.nextValidStatuses())
+                .containsExactlyInAnyOrder(OrderStatus.ENTREGUE, OrderStatus.CANCELADO);
 
         order.updateStatus(OrderStatus.ENTREGUE);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.ENTREGUE);
@@ -41,25 +41,28 @@ class OrderDomainTest {
     }
 
     @Test
-    @DisplayName("Deve permitir cancelamento a partir de RECEBIDO ou EM_PREPARO, mas bloquear após ENVIADO")
-    void shouldAllowCancellationOnlyFromRecebidoOrEmPreparo() {
+    @DisplayName("Deve permitir cancelamento a partir de RECEBIDO, EM_PREPARO ou SAIU_PARA_ENTREGA, mas bloquear após ENTREGUE")
+    void shouldAllowCancellationFromActiveStatusesAndRejectFromEntregue() {
         // Arrange
         Order orderRecebido = Order.builder().status(OrderStatus.RECEBIDO).build();
         Order orderEmPreparo = Order.builder().status(OrderStatus.EM_PREPARO).build();
-        Order orderEnviado = Order.builder().status(OrderStatus.ENVIADO).build();
+        Order orderSaiuParaEntrega = Order.builder().status(OrderStatus.SAIU_PARA_ENTREGA).build();
+        Order orderEntregue = Order.builder().status(OrderStatus.ENTREGUE).build();
 
         // Act
         orderRecebido.updateStatus(OrderStatus.CANCELADO);
         orderEmPreparo.updateStatus(OrderStatus.CANCELADO);
+        orderSaiuParaEntrega.updateStatus(OrderStatus.CANCELADO);
 
         // Assert
         assertThat(orderRecebido.getStatus()).isEqualTo(OrderStatus.CANCELADO);
         assertThat(orderEmPreparo.getStatus()).isEqualTo(OrderStatus.CANCELADO);
+        assertThat(orderSaiuParaEntrega.getStatus()).isEqualTo(OrderStatus.CANCELADO);
         assertThat(OrderStatus.CANCELADO.nextValidStatuses()).isEmpty();
 
-        assertThatThrownBy(() -> orderEnviado.updateStatus(OrderStatus.CANCELADO))
+        assertThatThrownBy(() -> orderEntregue.updateStatus(OrderStatus.CANCELADO))
                 .isInstanceOf(InvalidStatusTransitionException.class)
-                .hasMessageContaining("ENVIADO")
+                .hasMessageContaining("ENTREGUE")
                 .hasMessageContaining("CANCELADO");
     }
 
@@ -75,7 +78,7 @@ class OrderDomainTest {
         // Act & Assert
         assertThat(OrderStatus.RECEBIDO.canTransitionTo(null)).isFalse();
 
-        assertThatThrownBy(() -> orderRecebido.updateStatus(OrderStatus.ENVIADO))
+        assertThatThrownBy(() -> orderRecebido.updateStatus(OrderStatus.SAIU_PARA_ENTREGA))
                 .isInstanceOf(InvalidStatusTransitionException.class);
 
         assertThatThrownBy(() -> orderRecebido.updateStatus(OrderStatus.ENTREGUE))
@@ -87,7 +90,7 @@ class OrderDomainTest {
         assertThatThrownBy(() -> orderEntregue.updateStatus(OrderStatus.EM_PREPARO))
                 .isInstanceOf(InvalidStatusTransitionException.class);
 
-        assertThatThrownBy(() -> orderCancelado.updateStatus(OrderStatus.ENVIADO))
+        assertThatThrownBy(() -> orderCancelado.updateStatus(OrderStatus.SAIU_PARA_ENTREGA))
                 .isInstanceOf(InvalidStatusTransitionException.class);
     }
 
