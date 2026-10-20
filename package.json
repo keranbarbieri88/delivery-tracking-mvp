@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
     "dev:back": "cd backend && mvnw spring-boot:run",
+    "dev:back:h2": "cd backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=h2",
     "test:back": "cd backend && mvnw clean test",
     "dev:front": "cd frontend && npm run dev",
     "build:front": "cd frontend && npm run build",
