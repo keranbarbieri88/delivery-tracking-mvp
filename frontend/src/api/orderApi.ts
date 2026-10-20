@@ -1,5 +1,6 @@
 import { apiClient } from './client';
 import {
+  CreateOrderRequest,
   Order,
   OrderItem,
   OrderStatus,
@@ -66,6 +67,15 @@ export async function listOrders(): Promise<Order[]> {
 export async function getOrderById(id: string): Promise<Order> {
   const response = await apiClient.get<RawOrderResponse>(`/pedidos/${id}`);
   return normalizeOrder(response.data);
+}
+
+export async function createOrder(data: CreateOrderRequest): Promise<Order> {
+  const response = await apiClient.post<RawOrderResponse>('/pedidos', data);
+  const created = normalizeOrder(response.data);
+  return {
+    ...created,
+    clienteNome: created.clienteNome || data.clienteNome.trim() || undefined,
+  };
 }
 
 export async function updateOrderStatus(

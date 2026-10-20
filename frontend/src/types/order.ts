@@ -28,6 +28,18 @@ export interface UpdateOrderStatusRequest {
   status: OrderStatus;
 }
 
+export interface CreateOrderItemRequest {
+  nome: string;
+  quantidade: number;
+  precoUnitario: number;
+}
+
+export interface CreateOrderRequest {
+  clienteNome: string;
+  enderecoEntrega: string;
+  itens: CreateOrderItemRequest[];
+}
+
 export interface RawOrderResponse {
   id: string;
   clienteNome?: string;

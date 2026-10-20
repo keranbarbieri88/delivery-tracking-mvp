@@ -6,12 +6,15 @@ import {
   Clock,
   Inbox,
   Package,
+  Plus,
   RefreshCw,
   Truck,
 } from 'lucide-react';
 import { extractApiError } from '../api/client';
 import { listOrders, updateOrderStatus } from '../api/orderApi';
+import { Alert } from '../components/Alert';
 import { Button } from '../components/Button';
+import { CreateOrderModal } from '../components/CreateOrderModal';
 import { Layout } from '../components/Layout';
 import { OrderCard } from '../components/OrderCard';
 import { useAuth } from '../contexts/AuthContext';
@@ -44,7 +47,9 @@ export const OrdersPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('TODOS');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
 
   const fetchOrders = useCallback(async (isManualRefresh = false) => {
     if (isManualRefresh) {
@@ -78,6 +83,22 @@ export const OrdersPage: React.FC = () => {
       );
     },
     []
+  );
+
+  const handleOrderCreated = useCallback(
+    async (createdOrder: Order) => {
+      setStatusFilter('TODOS');
+      setOrders((prevOrders) => [
+        createdOrder,
+        ...prevOrders.filter((o) => o.id !== createdOrder.id),
+      ]);
+      const shortId = createdOrder.id ? createdOrder.id.slice(0, 8).toUpperCase() : '';
+      setSuccessMessage(
+        `Pedido ${shortId ? `#${shortId} ` : ''}registrado com sucesso!`
+      );
+      await fetchOrders(true);
+    },
+    [fetchOrders]
   );
 
   const filteredOrders = useMemo(
@@ -120,19 +141,37 @@ export const OrdersPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2.5">
+          <div className="flex flex-wrap shrink-0 items-center gap-2.5">
             <Button
               variant="secondary"
               onClick={() => void fetchOrders(true)}
               loading={refreshing}
               disabled={loading}
               leftIcon={<RefreshCw className="h-4 w-4" aria-hidden="true" />}
-              className="w-full sm:w-auto"
+              className="flex-1 sm:flex-initial"
             >
               Atualizar lista
             </Button>
+
+            <Button
+              variant="primary"
+              onClick={() => setIsCreateModalOpen(true)}
+              leftIcon={<Plus className="h-4 w-4" aria-hidden="true" />}
+              className="flex-1 sm:flex-initial"
+            >
+              Novo Pedido
+            </Button>
           </div>
         </section>
+
+        {successMessage && (
+          <Alert
+            variant="success"
+            title="Pedido criado!"
+            message={successMessage}
+            onClose={() => setSuccessMessage(null)}
+          />
+        )}
 
         {/* Resumo Operacional de Status */}
         <section
@@ -306,12 +345,19 @@ export const OrdersPage: React.FC = () => {
                 </Button>
               )}
               <Button
-                variant="primary"
+                variant="secondary"
                 onClick={() => void fetchOrders(true)}
                 loading={refreshing}
                 leftIcon={<RefreshCw className="h-4 w-4" aria-hidden="true" />}
               >
                 Atualizar pedidos
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => setIsCreateModalOpen(true)}
+                leftIcon={<Plus className="h-4 w-4" aria-hidden="true" />}
+              >
+                Novo Pedido
               </Button>
             </div>
           </div>
@@ -333,6 +379,13 @@ export const OrdersPage: React.FC = () => {
             ))}
           </section>
         )}
+
+        <CreateOrderModal
+          isOpen={isCreateModalOpen}
+          defaultClienteNome={user?.nome ?? ''}
+          onClose={() => setIsCreateModalOpen(false)}
+          onOrderCreated={handleOrderCreated}
+        />
       </div>
     </Layout>
   );

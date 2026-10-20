@@ -19,5 +19,16 @@
     color: #dc2626;
     font-weight: 500;
   }
+
+  dialog:modal {
+    overscroll-behavior: contain;
+  }
+
+  dialog::backdrop {
+    overflow: hidden;
+    overscroll-behavior: contain;
+    background-color: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(2px);
+  }
 }
 
