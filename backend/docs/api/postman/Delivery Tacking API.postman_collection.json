@@ -1,0 +1,1116 @@
+{
+  "info": {
+    "_postman_id": "a5a7ae06-edfe-4675-b448-b8cf5246aabd",
+    "name": "Delivery Tacking API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "33925720"
+  },
+  "item": [
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nome\": \"Ademir Barbieri\",\r\n  \"email\": \"ademir@teste.com\",\r\n  \"senha\": \"senhaSegura456@\",\r\n  \"role\": \"CLIENTE\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Register User - conflict",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nome\": \"Keran Barbieri\",\r\n  \"email\": \"keran@teste.com\",\r\n  \"senha\": \"senhaSegura123@\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/auth/register",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "vary",
+                  "value": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "0"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "expires",
+                  "value": "0"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 19 Oct 2026 12:11:29 GMT"
+                },
+                {
+                  "key": "keep-alive",
+                  "value": "timeout=60"
+                },
+                {
+                  "key": "connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"timestamp\": \"2026-10-19T09:11:29.1468285\",\n  \"status\": 409,\n  \"message\": \"Já existe um usuário cadastrado com o e-mail: keran@teste.com\",\n  \"errors\": {}\n}"
+            },
+            {
+              "name": "Register User - created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nome\": \"Edite Barbieri\",\r\n  \"email\": \"edite@teste.com\",\r\n  \"senha\": \"senhaSegura789@\",\r\n  \"role\": \"ADMIN\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/auth/register",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "vary",
+                  "value": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "0"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "expires",
+                  "value": "0"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 19 Oct 2026 17:51:40 GMT"
+                },
+                {
+                  "key": "keep-alive",
+                  "value": "timeout=60"
+                },
+                {
+                  "key": "connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"2a3de734-c481-4329-b157-8c0d20b697e2\",\n  \"nome\": \"Edite Barbieri\",\n  \"email\": \"edite@teste.com\",\n  \"createdAt\": \"2026-10-19T14:51:40.8440672\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {\r\n    const data = pm.response.json();\r\n    pm.collectionVariables.set(\"jwt_token\", data.token);\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"ademir@teste.com\",\r\n  \"senha\": \"senhaSegura789@\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Login - created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"email\": \"edite@teste.com\",\r\n  \"senha\": \"senhaSegura789@\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/auth/login",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "vary",
+                  "value": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "0"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "expires",
+                  "value": "0"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 19 Oct 2026 17:52:23 GMT"
+                },
+                {
+                  "key": "keep-alive",
+                  "value": "timeout=60"
+                },
+                {
+                  "key": "connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZGl0ZUB0ZXN0ZS5jb20iLCJ1c2VySWQiOiIyYTNkZTczNC1jNDgxLTQzMjktYjE1Ny04YzBkMjBiNjk3ZTIiLCJpYXQiOjE3OTI0MzIzNDMsImV4cCI6MTc5MjUxODc0M30.RMzjp90-n0LV_QYz58DzXC-9hbikeJukxFfSdNi4Ipk\",\n  \"type\": \"Bearer\",\n  \"user\": {\n    \"id\": \"2a3de734-c481-4329-b157-8c0d20b697e2\",\n    \"nome\": \"Edite Barbieri\",\n    \"email\": \"edite@teste.com\",\n    \"createdAt\": \"2026-10-19T14:51:40.844067\"\n  }\n}"
+            },
+            {
+              "name": "Login - unauthorized",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"email\": \"edite@teste.com\",\r\n  \"senha\": \"senhaSegura78789@\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/auth/login",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "vary",
+                  "value": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "0"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "expires",
+                  "value": "0"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 19 Oct 2026 17:53:04 GMT"
+                },
+                {
+                  "key": "keep-alive",
+                  "value": "timeout=60"
+                },
+                {
+                  "key": "connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"timestamp\": \"2026-10-19T14:53:04.7895387\",\n  \"status\": 401,\n  \"message\": \"Credenciais inválidas: e-mail ou senha incorretos\",\n  \"errors\": {}\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Order",
+      "item": [
+        {
+          "name": "Create an order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {\r\n    const data = pm.response.json();\r\n    pm.collectionVariables.set(\"pedido_id\", data.id);\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"enderecoEntrega\": \"Rua Voluntários da Pátria, 1500 - Centro, Araraquara - SP\",\r\n  \"itens\": [\r\n    {\r\n      \"nome\": \"Hambúrguer Artesanal Duplo\",\r\n      \"quantidade\": 2,\r\n      \"precoUnitario\": 32.50\r\n    },\r\n    {\r\n      \"nome\": \"Batata Rústica\",\r\n      \"quantidade\": 1,\r\n      \"precoUnitario\": 18.00\r\n    },\r\n    {\r\n      \"nome\": \"Refrigerante Lata 350ml\",\r\n      \"quantidade\": 2,\r\n      \"precoUnitario\": 6.00\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/pedidos",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "pedidos"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Create an order - created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"enderecoEntrega\": \"Rua Voluntários da Pátria, 1500 - Centro, Araraquara - SP\",\r\n  \"itens\": [\r\n    {\r\n      \"nome\": \"Hambúrguer Artesanal Duplo\",\r\n      \"quantidade\": 2,\r\n      \"precoUnitario\": 32.50\r\n    },\r\n    {\r\n      \"nome\": \"Batata Rústica\",\r\n      \"quantidade\": 1,\r\n      \"precoUnitario\": 18.00\r\n    },\r\n    {\r\n      \"nome\": \"Refrigerante Lata 350ml\",\r\n      \"quantidade\": 2,\r\n      \"precoUnitario\": 6.00\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/pedidos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "pedidos"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "vary",
+                  "value": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "0"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "expires",
+                  "value": "0"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 19 Oct 2026 12:09:42 GMT"
+                },
+                {
+                  "key": "keep-alive",
+                  "value": "timeout=60"
+                },
+                {
+                  "key": "connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"94a3db72-9a72-42a1-9d32-d60bd3b63b80\",\n  \"enderecoEntrega\": \"Rua Voluntários da Pátria, 1500 - Centro, Araraquara - SP\",\n  \"status\": \"RECEBIDO\",\n  \"total\": 95,\n  \"createdAt\": \"2026-10-19T12:09:42.410984400Z\",\n  \"itens\": [\n    {\n      \"id\": \"b4df22c9-5a0b-49f0-8c56-754659686d9c\",\n      \"nome\": \"Hambúrguer Artesanal Duplo\",\n      \"quantidade\": 2,\n      \"precoUnitario\": 32.5,\n      \"subtotal\": 65\n    },\n    {\n      \"id\": \"4f988c61-a8a0-42e7-be08-839a6d77d23a\",\n      \"nome\": \"Batata Rústica\",\n      \"quantidade\": 1,\n      \"precoUnitario\": 18,\n      \"subtotal\": 18\n    },\n    {\n      \"id\": \"7b36c5fb-7866-4f34-bbd0-073e4914b960\",\n      \"nome\": \"Refrigerante Lata 350ml\",\n      \"quantidade\": 2,\n      \"precoUnitario\": 6,\n      \"subtotal\": 12\n    }\n  ]\n}"
+            },
+            {
+              "name": "Create an order - bad request",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/pedidos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "pedidos"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "vary",
+                  "value": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "0"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "expires",
+                  "value": "0"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 19 Oct 2026 12:10:28 GMT"
+                },
+                {
+                  "key": "connection",
+                  "value": "close"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"timestamp\": \"2026-10-19T09:10:28.3490983\",\n  \"status\": 400,\n  \"message\": \"Erro de validação nos campos informados\",\n  \"errors\": {\n    \"enderecoEntrega\": \"O endereço de entrega é obrigatório\",\n    \"itens\": \"O pedido deve conter ao menos um item\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/pedidos",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "pedidos"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "List Order",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/pedidos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "pedidos"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "vary",
+                  "value": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "0"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "expires",
+                  "value": "0"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 19 Oct 2026 12:13:11 GMT"
+                },
+                {
+                  "key": "keep-alive",
+                  "value": "timeout=60"
+                },
+                {
+                  "key": "connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"94a3db72-9a72-42a1-9d32-d60bd3b63b80\",\n    \"enderecoEntrega\": \"Rua Voluntários da Pátria, 1500 - Centro, Araraquara - SP\",\n    \"status\": \"RECEBIDO\",\n    \"total\": 95,\n    \"createdAt\": \"2026-10-19T12:09:42.436110Z\",\n    \"itens\": [\n      {\n        \"id\": \"b4df22c9-5a0b-49f0-8c56-754659686d9c\",\n        \"nome\": \"Hambúrguer Artesanal Duplo\",\n        \"quantidade\": 2,\n        \"precoUnitario\": 32.5,\n        \"subtotal\": 65\n      },\n      {\n        \"id\": \"4f988c61-a8a0-42e7-be08-839a6d77d23a\",\n        \"nome\": \"Batata Rústica\",\n        \"quantidade\": 1,\n        \"precoUnitario\": 18,\n        \"subtotal\": 18\n      },\n      {\n        \"id\": \"7b36c5fb-7866-4f34-bbd0-073e4914b960\",\n        \"nome\": \"Refrigerante Lata 350ml\",\n        \"quantidade\": 2,\n        \"precoUnitario\": 6,\n        \"subtotal\": 12\n      }\n    ]\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Id Order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/pedidos/{{pedido_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "pedidos",
+                "{{pedido_id}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Id Order",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/pedidos/{{pedido_id}}",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "pedidos",
+                    "{{pedido_id}}"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "vary",
+                  "value": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "0"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "expires",
+                  "value": "0"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 19 Oct 2026 12:13:23 GMT"
+                },
+                {
+                  "key": "keep-alive",
+                  "value": "timeout=60"
+                },
+                {
+                  "key": "connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"94a3db72-9a72-42a1-9d32-d60bd3b63b80\",\n  \"enderecoEntrega\": \"Rua Voluntários da Pátria, 1500 - Centro, Araraquara - SP\",\n  \"status\": \"RECEBIDO\",\n  \"total\": 95,\n  \"createdAt\": \"2026-10-19T12:09:42.436110Z\",\n  \"itens\": [\n    {\n      \"id\": \"b4df22c9-5a0b-49f0-8c56-754659686d9c\",\n      \"nome\": \"Hambúrguer Artesanal Duplo\",\n      \"quantidade\": 2,\n      \"precoUnitario\": 32.5,\n      \"subtotal\": 65\n    },\n    {\n      \"id\": \"4f988c61-a8a0-42e7-be08-839a6d77d23a\",\n      \"nome\": \"Batata Rústica\",\n      \"quantidade\": 1,\n      \"precoUnitario\": 18,\n      \"subtotal\": 18\n    },\n    {\n      \"id\": \"7b36c5fb-7866-4f34-bbd0-073e4914b960\",\n      \"nome\": \"Refrigerante Lata 350ml\",\n      \"quantidade\": 2,\n      \"precoUnitario\": 6,\n      \"subtotal\": 12\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Status - Update Order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"status\": \"EM_PREPARO\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/pedidos/{{pedido_id}}/status",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "pedidos",
+                "{{pedido_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Status - Update Order - forbidden",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"status\": \"EM_PREPARO\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/pedidos/{{pedido_id}}/status",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "pedidos",
+                    "{{pedido_id}}",
+                    "status"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "vary",
+                  "value": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "0"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "expires",
+                  "value": "0"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 19 Oct 2026 15:52:04 GMT"
+                },
+                {
+                  "key": "keep-alive",
+                  "value": "timeout=60"
+                },
+                {
+                  "key": "connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"timestamp\": \"2026-10-19T12:52:04.7858158\",\n  \"status\": 403,\n  \"message\": \"Clientes só possuem permissão para cancelar pedidos.\",\n  \"errors\": {}\n}"
+            },
+            {
+              "name": "Status - Update Order - updated",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"status\": \"EM_PREPARO\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/pedidos/{{pedido_id}}/status",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "pedidos",
+                    "{{pedido_id}}",
+                    "status"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "vary",
+                  "value": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "0"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "expires",
+                  "value": "0"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 19 Oct 2026 17:54:41 GMT"
+                },
+                {
+                  "key": "keep-alive",
+                  "value": "timeout=60"
+                },
+                {
+                  "key": "connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"8aa812bb-008d-4b12-b9e8-cc0619c09c36\",\n  \"enderecoEntrega\": \"Rua Voluntários da Pátria, 1500 - Centro, Araraquara - SP\",\n  \"status\": \"EM_PREPARO\",\n  \"total\": 95,\n  \"createdAt\": \"2026-10-19T17:54:16.907849Z\",\n  \"itens\": [\n    {\n      \"id\": \"90dddcb9-3bb7-4758-99d5-d19627857730\",\n      \"nome\": \"Hambúrguer Artesanal Duplo\",\n      \"quantidade\": 2,\n      \"precoUnitario\": 32.5,\n      \"subtotal\": 65\n    },\n    {\n      \"id\": \"db9d8a2f-0538-4034-8fd3-6b97d9fcdfe2\",\n      \"nome\": \"Batata Rústica\",\n      \"quantidade\": 1,\n      \"precoUnitario\": 18,\n      \"subtotal\": 18\n    },\n    {\n      \"id\": \"5691fdb4-952e-4569-bfb2-276236fcb9b3\",\n      \"nome\": \"Refrigerante Lata 350ml\",\n      \"quantidade\": 2,\n      \"precoUnitario\": 6,\n      \"subtotal\": 12\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "jwt_token",
+      "value": ""
+    },
+    {
+      "key": "pedido_id",
+      "value": ""
+    }
+  ]
+}

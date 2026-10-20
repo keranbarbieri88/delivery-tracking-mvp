@@ -15,7 +15,7 @@ Aplicação **Full-Stack** de gestão e rastreamento de pedidos de entrega em te
 
 1. [Visão Geral e Regras de Negócio](#1-visão-geral-e-regras-de-negócio)
 2. [Stack Tecnológica e Padronização](#2-stack-tecnológica-e-padronização)
-3. [Guia de Instalação e Execução (Quickstart para o Avaliador)](#3-guia-de-instalação-e-execução-quickstart-para-o-avaliador)
+3. [Guia de Instalação e Execução](#3-guia-de-instalação-e-execução)
 4. [Arquitetura e Diagramas C4](#4-arquitetura-e-diagramas-c4)
 5. [Máquina de Estados de Pedidos (`OrderStatus`)](#5-máquina-de-estados-de-pedidos-orderstatus)
 6. [Documentação da API REST e Swagger UI](#6-documentação-da-api-rest-e-swagger-ui)
@@ -64,7 +64,7 @@ Aplicação **Full-Stack** de gestão e rastreamento de pedidos de entrega em te
 
 ---
 
-## 3. Guia de Instalação e Execução (Quickstart para o Avaliador)
+## 3. Guia de Instalação e Execução
 
 ### Pré-requisitos
 
@@ -166,6 +166,22 @@ _(Ou execute no Bash `npm run dev:front` diretamente na raiz após instalar as d
 
 ---
 
+### Passo 4 — Testar a API via Coleção do Postman / Insomnia (Opcional)
+
+O repositório disponibiliza uma coleção oficial do **Postman (v2.1)** pronta para importação, com variáveis de ambiente pré-configuradas (`{{jwt_token}}` e `{{pedido_id}}` preenchidos automaticamente via scripts de pós-resposta no Login e na Criação de Pedido):
+
+- **Arquivo da Coleção:** [`backend/docs/api/postman/Delivery Tacking API.postman_collection.json`](backend/docs/api/postman/Delivery%20Tacking%20API.postman_collection.json)
+- **Guia de Importação:** [`backend/docs/api/postman/curl-collection.md`](backend/docs/api/postman/curl-collection.md)
+
+**Como utilizar:**
+
+1. Abra o **Postman** (ou **Insomnia**) e clique em **Import**.
+2. Selecione o arquivo `backend/docs/api/postman/Delivery Tacking API.postman_collection.json`.
+3. Execute **`User → Register User`** e em seguida **`User → Login`** (o script da requisição salvará automaticamente o token JWT na variável `{{jwt_token}}`).
+4. Execute as requisições da pasta **`Order`** (`Create an order`, `List Order`, `Id Order` e `Update Order`) — o `{{pedido_id}}` criado também é capturado automaticamente para as chamadas seguintes.
+
+---
+
 ## 4. Arquitetura e Diagramas C4
 
 ### 4.1 C4 Nível 1 — Diagrama de Contexto
@@ -248,6 +264,7 @@ delivery-tracking-mvp/
 ├── package.json                   # Scripts orquestradores do monorepo (infra, dev, test, format)
 ├── GEMINI.md                      # Diretrizes arquiteturais e padrões de engenharia
 ├── backend/                       # API RESTful Spring Boot 3.3.5 + Java 21
+│   ├── docs/api/postman/          # Coleção oficial do Postman v2.1 e guia de importação
 │   ├── pom.xml
 │   └── src/
 │       ├── main/java/com/delivery/api/
