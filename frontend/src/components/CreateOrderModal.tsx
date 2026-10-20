@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  MapPin,
-  Plus,
-  ShoppingBag,
-  User as UserIcon,
-  X,
-} from 'lucide-react';
+import { MapPin, Plus, ShoppingBag, User as UserIcon, X } from 'lucide-react';
 import { extractApiError } from '../api/client';
 import { createOrder } from '../api/orderApi';
 import { CreateOrderItemRequest, Order } from '../types/order';
@@ -17,6 +11,7 @@ import {
   OrderItemDraft,
   OrderItemInputRow,
   OrderItemRowErrors,
+  parseCurrencyValue,
 } from './OrderItemInputRow';
 
 export interface CreateOrderModalProps {
@@ -52,19 +47,13 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
 
   const [clienteNome, setClienteNome] = useState(defaultClienteNome);
   const [enderecoEntrega, setEnderecoEntrega] = useState('');
-  const [items, setItems] = useState<OrderItemDraft[]>(() => [
-    createEmptyItemDraft(),
-  ]);
+  const [items, setItems] = useState<OrderItemDraft[]>(() => [createEmptyItemDraft()]);
 
   const [clienteError, setClienteError] = useState<string | undefined>();
   const [enderecoError, setEnderecoError] = useState<string | undefined>();
-  const [itemErrors, setItemErrors] = useState<Record<string, OrderItemRowErrors>>(
-    {}
-  );
+  const [itemErrors, setItemErrors] = useState<Record<string, OrderItemRowErrors>>({});
   const [apiError, setApiError] = useState<string | null>(null);
-  const [apiValidationMap, setApiValidationMap] = useState<Record<string, string>>(
-    {}
-  );
+  const [apiValidationMap, setApiValidationMap] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
   const resetForm = useCallback(() => {
@@ -152,9 +141,7 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
   const handleItemChange = useCallback(
     (uid: string, field: keyof Omit<OrderItemDraft, 'uid'>, value: string) => {
       setItems((prev) =>
-        prev.map((item) =>
-          item.uid === uid ? { ...item, [field]: value } : item
-        )
+        prev.map((item) => (item.uid === uid ? { ...item, [field]: value } : item)),
       );
 
       setItemErrors((prev) => {
@@ -171,7 +158,7 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
         };
       });
     },
-    []
+    [],
   );
 
   const handleAddItem = () => {
@@ -189,7 +176,7 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
 
   const orderTotal = useMemo(
     () => items.reduce((sum, item) => sum + calculateItemSubtotal(item), 0),
-    [items]
+    [items],
   );
 
   const validateForm = (): CreateOrderItemRequest[] | null => {
@@ -216,7 +203,7 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
       const rowErr: OrderItemRowErrors = {};
       const trimmedNome = item.nome.trim();
       const parsedQtd = Number.parseInt(item.quantidade, 10);
-      const parsedPrice = Number.parseFloat(item.precoUnitario.replace(',', '.'));
+      const parsedPrice = parseCurrencyValue(item.precoUnitario);
 
       if (!trimmedNome) {
         rowErr.nome = 'Obrigatório';
@@ -383,9 +370,7 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
           <div className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-sm font-bold text-slate-800">
-                  Itens do Pedido
-                </h3>
+                <h3 className="text-sm font-bold text-slate-800">Itens do Pedido</h3>
                 <p className="text-xs text-slate-500">
                   Adicione um ou mais produtos com quantidade e preço unitário
                 </p>
@@ -424,7 +409,7 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
         <div className="border-t border-slate-200 bg-slate-50 px-4 py-3.5 sm:px-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-baseline justify-between sm:block">
-              <span className=" block text-xs font-medium uppercase tracking-wider text-slate-500">
+              <span className="block text-xs font-medium uppercase tracking-wider text-slate-500">
                 Valor Total do Pedido
               </span>
               <span className="text-lg font-extrabold text-orange-600 sm:text-xl">
@@ -458,4 +443,3 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
     </dialog>
   );
 };
-

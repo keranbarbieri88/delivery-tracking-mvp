@@ -20,7 +20,11 @@ export interface OrderItemInputRowProps {
   errors?: OrderItemRowErrors;
   canRemove: boolean;
   disabled?: boolean;
-  onChange: (uid: string, field: keyof Omit<OrderItemDraft, 'uid'>, value: string) => void;
+  onChange: (
+    uid: string,
+    field: keyof Omit<OrderItemDraft, 'uid'>,
+    value: string,
+  ) => void;
   onRemove: (uid: string) => void;
 }
 
@@ -29,9 +33,62 @@ const currencyFormatter = new Intl.NumberFormat('pt-BR', {
   currency: 'BRL',
 });
 
+/**
+ * Converte uma string monetária no padrão brasileiro ("59,90", "1.250,50" ou "59.90")
+ * para número de ponto flutuante.
+ */
+export function parseCurrencyValue(raw: string): number {
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return Number.NaN;
+  }
+  const normalized = trimmed.includes(',')
+    ? trimmed.replace(/\./g, '').replace(',', '.')
+    : trimmed;
+  return Number.parseFloat(normalized);
+}
+
+/**
+ * Sanitiza a digitação de preço unitário permitindo dígitos e uma única vírgula
+ * com até 2 casas decimais (ex.: "59,90"). Converte ponto digitado em vírgula.
+ */
+export function sanitizeCurrencyInput(raw: string): string {
+  const withComma = raw.replace(/\./g, ',');
+  const cleaned = withComma.replace(/[^\d,]/g, '');
+  if (!cleaned) {
+    return '';
+  }
+
+  const [integerPart = '', ...decimalParts] = cleaned.split(',');
+  const normalizedInt =
+    integerPart.length > 1 ? integerPart.replace(/^0+(?=\d)/, '') : integerPart;
+
+  if (decimalParts.length === 0) {
+    return normalizedInt;
+  }
+
+  const decimals = decimalParts.join('').slice(0, 2);
+  const safeInt = normalizedInt || '0';
+  return `${safeInt},${decimals}`;
+}
+
+/**
+ * Ao perder o foco (onBlur), formata o valor válido com 2 casas decimais e vírgula (ex.: "59" -> "59,00").
+ */
+export function formatCurrencyOnBlur(raw: string): string {
+  const parsed = parseCurrencyValue(raw);
+  if (Number.isNaN(parsed) || parsed <= 0) {
+    return raw.trim();
+  }
+  return parsed.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
 export function calculateItemSubtotal(item: OrderItemDraft): number {
   const qty = Number.parseInt(item.quantidade, 10);
-  const price = Number.parseFloat(item.precoUnitario.replace(',', '.'));
+  const price = parseCurrencyValue(item.precoUnitario);
   if (Number.isNaN(qty) || qty <= 0 || Number.isNaN(price) || price <= 0) {
     return 0;
   }
@@ -148,7 +205,7 @@ export const OrderItemInputRow: React.FC<OrderItemInputRowProps> = ({
           )}
         </div>
 
-        {/* Preço Unitário */}
+        {/* Preço Unitário com Máscara Monetária (suporte a vírgula) */}
         <div className="sm:col-span-3">
           <label
             htmlFor={precoId}
@@ -156,24 +213,38 @@ export const OrderItemInputRow: React.FC<OrderItemInputRowProps> = ({
           >
             Preço Unit. (R$) *
           </label>
-          <input
-            id={precoId}
-            type="number"
-            inputMode="decimal"
-            min="0.01"
-            step="0.01"
-            required
-            disabled={disabled}
-            placeholder="0,00"
-            value={item.precoUnitario}
-            onChange={(e) => onChange(item.uid, 'precoUnitario', e.target.value)}
-            aria-invalid={errors?.precoUnitario ? 'true' : undefined}
-            className={`block w-full rounded-xl border bg-white px-3 py-2 text-xs text-slate-900 shadow-sm transition-colors placeholder:text-slate-400 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-100 sm:text-sm ${
-              errors?.precoUnitario
-                ? 'border-red-500 bg-red-50/40 focus:border-red-500 focus:ring-red-500/20'
-                : 'border-slate-300 focus:border-orange-500 focus:ring-orange-500/20'
-            }`}
-          />
+          <div className="relative">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5 text-xs font-medium text-slate-400"
+            >
+              R$
+            </span>
+            <input
+              id={precoId}
+              type="text"
+              inputMode="decimal"
+              required
+              disabled={disabled}
+              placeholder="0,00"
+              value={item.precoUnitario}
+              onChange={(e) =>
+                onChange(item.uid, 'precoUnitario', sanitizeCurrencyInput(e.target.value))
+              }
+              onBlur={(e) => {
+                const formatted = formatCurrencyOnBlur(e.target.value);
+                if (formatted !== item.precoUnitario) {
+                  onChange(item.uid, 'precoUnitario', formatted);
+                }
+              }}
+              aria-invalid={errors?.precoUnitario ? 'true' : undefined}
+              className={`block w-full rounded-xl border bg-white py-2 pl-8 pr-3 text-xs text-slate-900 shadow-sm transition-colors placeholder:text-slate-400 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-100 sm:text-sm ${
+                errors?.precoUnitario
+                  ? 'border-red-500 bg-red-50/40 focus:border-red-500 focus:ring-red-500/20'
+                  : 'border-slate-300 focus:border-orange-500 focus:ring-orange-500/20'
+              }`}
+            />
+          </div>
           {errors?.precoUnitario && (
             <p className="mt-1 flex items-center gap-1 text-xs font-medium text-red-600">
               <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
@@ -185,4 +256,3 @@ export const OrderItemInputRow: React.FC<OrderItemInputRowProps> = ({
     </div>
   );
 };
-
