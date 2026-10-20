@@ -22,6 +22,7 @@ data/
 *.db
 *.mv.db
 *.trace.db
+*.lock.db
 
 # Node / Frontend
 node_modules/
@@ -58,6 +59,31 @@ pnpm-debug.log*
 !.vscode/settings.json
 !.vscode/extensions.json
 !.vscode/launch.json
+
+# Vite Cache
+.vite/
+**/.vite/
+
+# AI Agent Workspaces & Scratchpads
+.gemini/
+.antigravity/
+mwg_guides.md
+scratch/
+
+# Coverage Reports & Test Artifacts
+coverage/
+**/coverage/
+.nyc_output/
+*.lcov
+
+# OS / Editor Temp
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
+*.bak
+*.swp
+*~
 
 # OS Generated
 .DS_Store

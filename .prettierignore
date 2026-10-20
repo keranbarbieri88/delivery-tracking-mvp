@@ -1,0 +1,27 @@
+# Git & Dependencies
+node_modules/
+.git/
+
+# Backend Build & Java Bytecode
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+backend/*.db
+backend/*.lock.db
+backend/data/
+
+# Frontend Build
+frontend/dist/
+frontend/build/
+frontend/.vite/
+
+# Database files
+data/
+*.mv.db
+*.lock.db
+
+# VS Code & IDEs
+.vscode/
+.idea/
+*.iml

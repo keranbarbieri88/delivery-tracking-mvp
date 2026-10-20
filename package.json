@@ -1,0 +1,17 @@
+{
+  "name": "delivery-tracking-mvp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:back": "cd backend && mvnw spring-boot:run",
+    "test:back": "cd backend && mvnw clean test",
+    "dev:front": "cd frontend && npm run dev",
+    "build:front": "cd frontend && npm run build",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md,yml}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10",
+    "prettier-plugin-tailwindcss": "^0.6.14"
+  }
+}
