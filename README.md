@@ -19,7 +19,7 @@ Aplicação **Full-Stack** de gestão e rastreamento de pedidos de entrega em te
 4. [Arquitetura e Diagramas C4](#4-arquitetura-e-diagramas-c4)
 5. [Máquina de Estados de Pedidos (`OrderStatus`)](#5-máquina-de-estados-de-pedidos-orderstatus)
 6. [Documentação da API REST e Swagger UI](#6-documentação-da-api-rest-e-swagger-ui)
-7. [Testes Automatizados (Padrão AAA), Formatação e CI/CD](#7-testes-automatizados-padrão-aaa-formatação-e-cicd)
+7. [Testes Automatizados (Unitários, Slice e E2E), Formatação e CI/CD](#7-testes-automatizados-unitários-slice-e-e2e-formatação-e-cicd)
 
 ---
 
@@ -84,7 +84,7 @@ Na raiz do projeto (`delivery-tracking-mvp/`), você dispõe de atalhos prontos 
 | `npm run infra:down`   | Para e remove o container do banco de dados                                                  |
 | `npm run dev:back`     | Inicia a API Spring Boot no perfil padrão (`PostgreSQL` na porta `5432`)                     |
 | `npm run dev:back:h2`  | Inicia a API Spring Boot com banco **H2 local em modo PostgreSQL** (**dispensa Docker**)     |
-| `npm run test:back`    | Executa os 64 testes automatizados do back-end (`mvnw clean test`)                           |
+| `npm run test:back`    | Executa os 67 testes automatizados do back-end (`mvnw clean test`)                           |
 | `npm run dev:front`    | Inicia o servidor de desenvolvimento Vite do front-end (`http://localhost:5173`)             |
 | `npm run build:front`  | Valida o TypeScript (`tsc -b`) e gera o bundle de produção do front-end (`frontend/dist`)    |
 | `npm run format`       | Formata todos os arquivos (`ts, tsx, js, json, css, md, yml`) com Prettier + plugin Tailwind |
@@ -159,109 +159,7 @@ _(Ou execute no Bash `npm run dev:front` diretamente na raiz após instalar as d
 1. **Criar conta de Cliente:**
    - Acesse `/register`, preencha Nome, E-mail, Senha (mín. 6 caracteres), mantenha o perfil **Cliente** selecionado e clique em **Concluir cadastro**.
 2. **Autenticar e Criar Pedido:**
-   - Faça login em `/login`. Na tela `/pedidos`, clique em **Novo Pedido**, informe o endereço de entrega, adicione um ou mais itens com quantidade e preço unitário (observe o cálculo reativo de subtotais e total em `R$`) e clique em **Salvar Pedido**.
-3. **Testar Permissão Operacional de Lojista:**
-   - Clique em **Sair**, acesse `/register` e cadastre um segundo usuário selecionando o perfil **Lojista**.
-   - Faça login com o usuário **Lojista**: todos os pedidos da loja serão exibidos e você poderá avançar o status do pedido diretamente no seletor do card (`Recebido` → `Em Preparo` → `Saiu Para Entrega` → `Entregue`).
-
----
-
-## 4. Arquitetura e Diagramas C4
-
-### 4.1 C4 Nível 1 — Diagrama de Contexto
-
-- **Java 21 LTS** (`java -version`)
-- **Node.js 20+** e **npm** (`node -v`)
-- **Docker** e **Docker Compose** _(Opcional — há suporte nativo ao perfil `h2` caso não deseje utilizar Docker)_
-
----
-
-### Scripts Rápidos do Monorepo (`package.json` da raiz)
-
-Na raiz do projeto (`delivery-tracking-mvp/`), você dispõe de atalhos prontos para todo o ciclo de execução:
-
-| Comando na Raiz        | O que executa                                                                                |
-| :--------------------- | :------------------------------------------------------------------------------------------- |
-| `npm run infra:up`     | Sobe o container PostgreSQL 16 (`delivery-tracking-postgres`) em background via Docker       |
-| `npm run infra:down`   | Para e remove o container do banco de dados                                                  |
-| `npm run dev:back`     | Inicia a API Spring Boot no perfil padrão (`PostgreSQL` na porta `5432`)                     |
-| `npm run dev:back:h2`  | Inicia a API Spring Boot com banco **H2 local em modo PostgreSQL** (**dispensa Docker**)     |
-| `npm run test:back`    | Executa os 64 testes automatizados do back-end (`mvnw clean test`)                           |
-| `npm run dev:front`    | Inicia o servidor de desenvolvimento Vite do front-end (`http://localhost:5173`)             |
-| `npm run build:front`  | Valida o TypeScript (`tsc -b`) e gera o bundle de produção do front-end (`frontend/dist`)    |
-| `npm run format`       | Formata todos os arquivos (`ts, tsx, js, json, css, md, yml`) com Prettier + plugin Tailwind |
-| `npm run format:check` | Verifica se a formatação do código está em conformidade com o `.prettierrc`                  |
-
----
-
-### Passo 1 — Iniciar o Back-end (Escolha a Opção A ou B)
-
-#### Opção A: Execução Padrão com PostgreSQL 16 via Docker
-
-Na raiz do repositório:
-
-```bash
-# 1. Subir o container PostgreSQL 16 (porta 5432, DB: delivery_db, user: delivery_user)
-npm run infra:up
-# (ou: docker compose up -d)
-
-# 2. Iniciar a API Spring Boot (porta 8080)
-cd backend
-./mvnw spring-boot:run
-```
-
-_(No Windows PowerShell/CMD, utilize `.\mvnw.cmd spring-boot:run` ou diretamente `npm run dev:back` na raiz)._
-
-#### Opção B: Execução Instantânea sem Docker (Perfil H2 em modo PostgreSQL)
-
-Caso não tenha o Docker em execução na máquina, rode o back-end com persistência local em arquivo (`./data/delivery_db`) compatível com PostgreSQL:
-
-```bash
-# Na raiz do repositório:
-npm run dev:back:h2
-
-# Ou diretamente na pasta backend/:
-cd backend
-./mvnw spring-boot:run -Dspring-boot.run.profiles=h2
-```
-
-_(No Windows PowerShell/CMD dentro de `backend/`: `.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=h2"`)._
-
-- **API Base URL:** `http://localhost:8080/api/v1`
-- **Swagger UI (Documentação Interativa):** `http://localhost:8080/swagger-ui.html`
-- **OpenAPI JSON Spec:** `http://localhost:8080/v3/api-docs`
-- **Console H2** _(quando ativo no perfil `h2`)_: `http://localhost:8080/h2-console` (`JDBC URL`: `jdbc:h2:file:./data/delivery_db`, `User Name`: `sa`, senha em branco)
-
----
-
-### Passo 2 — Instalar e Iniciar o Front-end (React + Vite)
-
-Em um segundo terminal, a partir da raiz do projeto:
-
-```bash
-# 1. Instalar dependências do front-end
-cd frontend
-npm install
-
-# 2. Iniciar o servidor de desenvolvimento (porta 5173)
-npm run dev
-```
-
-_(Ou execute no Bash `npm run dev:front` diretamente na raiz após instalar as dependências)._
-
-> **Variáveis de Ambiente (`frontend/.env.development`):**
-> O projeto já inclui `.env.development` pré-configurado apontando para `VITE_PORT=5173` e `VITE_API_BASE_URL=http://localhost:8080/api/v1`. Nenhuma configuração manual adicional é necessária.
-
-- Acesse a aplicação no navegador em: **`http://localhost:5173`**
-
----
-
-### Passo 3 — Roteiro Sugerido de Avaliação na Interface (`http://localhost:5173`)
-
-1. **Criar conta de Cliente:**
-   - Acesse `/register`, preencha Nome, E-mail, Senha (mín. 6 caracteres), mantenha o perfil **Cliente** selecionado e clique em **Concluir cadastro**.
-2. **Autenticar e Criar Pedido:**
-   - Faça login em `/login`. Na tela `/pedidos`, clique em **Novo Pedido**, informe o endereço de entrega, adicione um ou mais itens com quantidade e preço unitário (observe o cálculo reativo de subtotais e total em `R$`) e clique em **Salvar Pedido**.
+   - Faça login em `/login`. Na tela `/pedidos`, clique em **Novo Pedido**, informe o endereço de entrega, adicione um ou mais itens com quantidade e preço unitário com suporte a vírgula para centavos (observe o cálculo reativo de subtotais e total em `R$`) e clique em **Salvar Pedido**.
 3. **Testar Permissão Operacional de Lojista:**
    - Clique em **Sair**, acesse `/register` e cadastre um segundo usuário selecionando o perfil **Lojista**.
    - Faça login com o usuário **Lojista**: todos os pedidos da loja serão exibidos e você poderá avançar o status do pedido diretamente no seletor do card (`Recebido` → `Em Preparo` → `Saiu Para Entrega` → `Entregue`).
@@ -359,7 +257,7 @@ delivery-tracking-mvp/
 │       ├── main/resources/
 │       │   ├── application.yml    # Configuração padrão (PostgreSQL, JWT, CORS, Swagger)
 │       │   └── application-h2.yml # Perfil alternativo H2 em modo PostgreSQL
-│       └── test/java/com/delivery/api/ # 64 testes automatizados (Padrão AAA)
+│       └── test/java/com/delivery/api/ # 67 testes automatizados (Unitários, Slice e E2E)
 └── frontend/                      # SPA React 18.3 + TypeScript 5.6 + Tailwind CSS 3.4
     ├── .env.development           # VITE_PORT=5173 e VITE_API_BASE_URL
     ├── package.json               # Scripts dev, build, lint (tsc --noEmit) e preview
@@ -485,19 +383,34 @@ Todas as exceções de validação (`400`), autenticação (`401`), permissão (
 
 ---
 
-## 7. Testes Automatizados (Padrão AAA), Formatação e CI/CD
+## 7. Testes Automatizados (Unitários, Slice e E2E), Formatação e CI/CD
 
-Todos os testes unitários e de integração do back-end seguem estritamente o padrão **AAA (Arrange, Act, Assert)**.
+Todos os **67 testes automatizados** do back-end seguem estritamente o padrão **AAA (Arrange, Act, Assert)** e são executados sem dependência de banco de dados externo.
 
-### Executar a Suíte de Testes do Back-end (64 testes)
+### Arquitetura da Suíte de Testes (`backend/src/test/java`)
+
+| Camada / Suíte                                                                                                             | Tipo de Teste                    | Cobertura Principal                                                                                                                                 |
+| :------------------------------------------------------------------------------------------------------------------------- | :------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`AuthServiceTest`](backend/src/test/java/com/delivery/api/auth/AuthServiceTest.java)                                      | Unitário (`Mockito`)             | Registro com hash BCrypt, normalização de e-mail, conflito `409`, login com emissão de JWT e recusa de credenciais inválidas (`401`)                |
+| [`OrderServiceTest`](backend/src/test/java/com/delivery/api/order/OrderServiceTest.java)                                   | Unitário (`Mockito`)             | Cálculo exato de subtotais/total com `BigDecimal`, status inicial `RECEBIDO`, permissões por `Role` e transições válidas vs. bloqueadas (`422`)     |
+| [`OrderDomainTest`](backend/src/test/java/com/delivery/api/order/OrderDomainTest.java) & `OrderStatusConverterTest`        | Unitário (Domínio)               | Invariantes de `Order`, `OrderItem`, máquina de estados `OrderStatus` (`nextValidStatuses()`) e sanitização de status legados no JPA                |
+| [`JwtServiceTest`](backend/src/test/java/com/delivery/api/shared/security/JwtServiceTest.java) & `JwtAuthenticationFilter` | Unitário (Segurança)             | Assinatura/validação de tokens `HMAC-SHA256`, extração de claims e filtro Stateless                                                                 |
+| [`AuthControllerTest`](backend/src/test/java/com/delivery/api/auth/AuthControllerTest.java) & `OrderControllerTest`        | Integração Web (`MockMvc`)       | Contratos HTTP REST, Bean Validation (`400`), proteção de rotas (`401`/`403`) e serialização JSON                                                   |
+| **[`DeliveryTrackingE2ETest`](backend/src/test/java/com/delivery/api/DeliveryTrackingE2ETest.java)**                       | **Integração Ponta a Ponta E2E** | **Jornada completa (`register` → `login` → `createOrder` → ciclo `RECEBIDO` até `ENTREGUE`), isolamento multi-cliente e bloqueio pós-cancelamento** |
+
+### Executar a Suíte Completa ou Apenas os Testes E2E
 
 ```bash
-# Pela raiz do monorepo:
+# Executar todos os 67 testes pela raiz do monorepo:
 npm run test:back
 
 # Ou diretamente na pasta backend/:
 cd backend
 ./mvnw clean test
+
+# Executar exclusivamente a suíte de Integração Ponta a Ponta (E2E):
+cd backend
+./mvnw test -Dtest=DeliveryTrackingE2ETest
 ```
 
 ### Validar Tipagem TypeScript, Build e Formatação Prettier
@@ -517,5 +430,5 @@ npm run format
 
 O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) executa automaticamente em cada `push` (`main`, `develop`) ou `pull_request` (`main`):
 
-1. **`backend-check`:** Configura Java 21 (Temurin) com cache Maven e executa `./mvnw clean test`.
+1. **`backend-check`:** Configura Java 21 (Temurin) com cache Maven e executa `./mvnw clean test` (incluindo testes unitários, de controller e E2E).
 2. **`frontend-check`:** Configura Node.js 20 com cache npm, instala dependências com `npm ci`, valida TypeScript com `npm run lint` (`tsc --noEmit`) e compila o bundle de produção com `npm run build`.
