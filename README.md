@@ -449,3 +449,16 @@ O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) executa automa
 
 1. **`backend-check`:** Configura Java 21 (Temurin) com cache Maven e executa `./mvnw clean test` (incluindo testes unitários, de controller e E2E).
 2. **`frontend-check`:** Configura Node.js 20 com cache npm, instala dependências com `npm ci`, valida TypeScript com `npm run lint` (`tsc --noEmit`) e compila o bundle de produção com `npm run build`.
+
+
+## 8. Framework MoSCoW do Projeto (MVP vs. Futuro)
+Este quadro organiza o ciclo de vida do software e serve como documentação de produto para o próprio repositório:
+
+## 4. Framework MoSCoW do Projeto (MVP vs. Futuro)
+
+| Categoria | Requisitos e Funcionalidades | Justificativa / Impacto |
+| :--- | :--- | :--- |
+| **Must Have** *(Obrigatório para o MVP)* | - Autenticação JWT com isolamento de perfis RBAC (`CLIENTE` vs. `LOJISTA`/`ADMIN`).<br>- Criação de pedidos com itens dinâmicos e cálculo estrito de subtotal/total no back-end.<br>- Máquina de estados com regras operacionais de transição (`RECEBIDO` $\rightarrow$ `EM_PREPARO` $\rightarrow$ `SAIU_PARA_ENTREGA` $\rightarrow$ `ENTREGUE`).<br>- Regra de cancelamento restrita a clientes para pedidos em estado inicial (`RECEBIDO`).<br>- Isolamento multi-inquilino de pedidos (cliente só enxerga seus pedidos; lojista tem visão global).<br>- Persistência em banco relacional (PostgreSQL e H2 para testes rápidos).<br>- Interface web responsiva em React + TypeScript + Tailwind CSS. | Garantir a integridade do ciclo central de rastreamento de entregas, conformidade de segurança e avaliação imediata sem pendências de negócio. |
+| **Should Have** *(Importante, com alto valor agregado)* | - Sanitização retrocompatível de enums legados via JPA `AttributeConverter` (`ENVIADO` $\rightarrow$ `SAIU_PARA_ENTREGA`).<br>- Suíte abrangente de testes unitários (AAA) e testes de integração ponta a ponta (E2E MockMvc).<br>- Pipeline automatizada de CI via GitHub Actions com validação de build e testes a cada commit.<br>- Coleção exportada do Postman (v2.1) e guia de cURLs prontos para execução no terminal.<br>- Documentação interativa via Swagger UI / OpenAPI Spec. | Elevar a manutenibilidade, Developer Experience (DX) para avaliadores e confiabilidade em deploy contínuo. |
+| **Could Have** *(Desejável para próximas iterações)* | - Atualização de status em tempo real via WebSockets ou Server-Sent Events (SSE).<br>- Paginação e ordenação dinâmica server-side na listagem de pedidos.<br>- Filtros combinados por data de emissão, faixa de valor e status específico no front-end.<br>- Tema escuro (*Dark Mode*) configurável na UI. | Enriquecer a experiência interativa do usuário sem bloquear o lançamento do MVP. |
+| **Won't Have** *(Fora do escopo do MVP — Backlog Futuro)* | - Gateway de pagamento online integrado (Pix, Cartão de Crédito).<br>- Rastreamento georreferenciado com telemetria GPS e mapas ao vivo.<br>- Sistema de frete dinâmico integrado a APIs de terceiros.<br>- App mobile nativo dedicado (Android/iOS). | Evitar complexidade acidental e manter o foco na avaliação da arquitetura e qualidade de código central. |
